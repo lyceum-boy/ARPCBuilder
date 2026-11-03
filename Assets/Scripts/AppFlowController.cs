@@ -33,6 +33,10 @@ public class AppFlowController : MonoBehaviour
     [Header("Case Selection UI")]
     [SerializeField] private TMP_Text caseSelectionSpaceText;
 
+    [Header("Case Selection")]
+    [SerializeField]
+    private CaseSelectionController caseSelectionController;
+
     // X = ширина, Y = высота, Z = глубина.
     public Vector3 MeasuredSpaceDimensions { get; private set; }
 
@@ -91,12 +95,41 @@ public class AppFlowController : MonoBehaviour
         );
 
         ShowStage(TrainingStage.SelectCase);
+
+        if (caseSelectionController != null)
+        {
+            caseSelectionController.Evaluate(MeasuredSpaceDimensions);
+        }
     }
 
     public void BackToMeasurement()
     {
         ShowStage(TrainingStage.MeasureSpace);
     }
+
+    public void BackToCaseSelection()
+    {
+        if (CurrentStage != TrainingStage.PlaceCase)
+            return;
+
+        // Удаляем размещённый корпус.
+        if (placementController != null)
+        {
+            placementController.ClearPlacedCase();
+        }
+
+        // Возвращаемся к выбору корпуса.
+        ShowStage(TrainingStage.SelectCase);
+
+        // Обновляем совместимость и сбрасываем выбор.
+        if (caseSelectionController != null)
+        {
+            caseSelectionController.Evaluate(
+                MeasuredSpaceDimensions
+            );
+        }
+    }
+
 
     public void ShowStage(TrainingStage stage)
     {
@@ -123,10 +156,27 @@ public class AppFlowController : MonoBehaviour
                 stage == TrainingStage.PlaceCase;
         }
 
+        //if (measurementController != null)
+        //{
+        //    measurementController.enabled =
+        //        stage == TrainingStage.MeasureSpace;
+        //}
+
         if (measurementController != null)
         {
-            measurementController.enabled =
-                stage == TrainingStage.MeasureSpace;
+            //bool isMeasuring = stage == TrainingStage.MeasureSpace;
+
+            //measurementController.enabled = isMeasuring;
+            //measurementController.SetVisualizationVisible(isMeasuring);
+
+            bool isMeasuring = stage == TrainingStage.MeasureSpace;
+
+            bool showMeasurementVolume =
+                stage == TrainingStage.MeasureSpace ||
+                stage == TrainingStage.PlaceCase;
+
+            measurementController.enabled = isMeasuring;
+            measurementController.SetVisualizationVisible(showMeasurementVolume);
         }
 
         Debug.Log($"Training stage: {stage}");

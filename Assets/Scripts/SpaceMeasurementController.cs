@@ -394,4 +394,16 @@ public class SpaceMeasurementController : MonoBehaviour
 
         Debug.Log(message);
     }
+
+    public void SetVisualizationVisible(bool visible)
+    {
+        foreach (GameObject marker in markers)
+        {
+            if (marker != null)
+                marker.SetActive(visible);
+        }
+
+        if (outlineRoot != null)
+            outlineRoot.SetActive(visible);
+    }
 }
