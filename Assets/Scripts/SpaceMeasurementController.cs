@@ -322,6 +322,52 @@ public class SpaceMeasurementController : MonoBehaviour
         edges[index].SetPosition(1, end);
     }
 
+
+    public bool TryGetCasePlacementPose(out Pose pose)
+    {
+        pose = default;
+
+        if (!IsComplete || Width < 0.05f || Depth < 0.05f)
+            return false;
+
+        // ѕерва€ сторона измеренного пр€моугольника.
+        Vector3 widthVector = points[1] - points[0];
+        widthVector.y = 0f;
+
+        Vector3 widthDirection = widthVector.normalized;
+
+        // ¬тора€ сторона с учЄтом того,
+        // по какую сторону выбрана треть€ точка.
+        Vector3 depthDirection =
+            Vector3.Cross(Vector3.up, widthDirection);
+
+        Vector3 depthVector = depthDirection * signedDepth;
+
+        // √еометрический центр измеренной области.
+        Vector3 center =
+            points[0] +
+            widthVector * 0.5f +
+            depthVector * 0.5f;
+
+        center.y = points[0].y;
+
+        // Ћокальна€ ось Z корпуса Ч его глубина.
+        // —овмещаем еЄ с длинной стороной области.
+        Vector3 longDirection =
+            Width >= Depth
+                ? widthDirection
+                : depthVector.normalized;
+
+        Quaternion rotation =
+            Quaternion.LookRotation(
+                longDirection,
+                Vector3.up
+            );
+
+        pose = new Pose(center, rotation);
+        return true;
+    }
+
     public void SetAvailableHeight(float heightMeters)
     {
         availableHeightMeters = Mathf.Max(0.1f, heightMeters);

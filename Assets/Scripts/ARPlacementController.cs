@@ -15,6 +15,9 @@ public class ARPlacementController : MonoBehaviour
     [Header("Prefab")]
     [SerializeField] private GameObject casePrefab;
 
+    [SerializeField]
+    private SpaceMeasurementController measurementController;
+
     private ARRaycastManager raycastManager;
     private GameObject placedCase;
 
@@ -67,15 +70,31 @@ public class ARPlacementController : MonoBehaviour
             return;
         }
 
+
         Pose hitPose = hits[0].pose;
+
+        Vector3 placementPosition = hitPose.position;
+
+        Quaternion placementRotation =
+            Quaternion.Euler(0f, initialYawDegrees, 0f);
+
+        // ѕри наличии измерений используем центр
+        // и ориентацию пр€моугольника.
+        if (measurementController != null &&
+            measurementController.TryGetCasePlacementPose(
+                out Pose measuredPose))
+        {
+            placementPosition = measuredPose.position;
+            placementRotation = measuredPose.rotation;
+        }
 
         placedCase = Instantiate(
             casePrefab,
-            hitPose.position,
-            Quaternion.Euler(0f, initialYawDegrees, 0f)
+            placementPosition,
+            placementRotation
         );
 
-        Debug.Log("PC case placed.");
+        Debug.Log("PC case placed at measured area center.");
     }
 
     private static bool TryGetPointerPosition(out Vector2 position)

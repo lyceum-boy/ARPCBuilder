@@ -24,9 +24,9 @@ public class CaseSelectionController : MonoBehaviour
     [SerializeField] private Button placeCaseButton;
 
     [Header("Standard Dimensions (mm)")]
-    [SerializeField, Min(1)] private int widthMm = 220;
-    [SerializeField, Min(1)] private int heightMm = 450;
-    [SerializeField, Min(1)] private int depthMm = 450;
+    [SerializeField, Min(1)] private int widthMm = 242;
+    [SerializeField, Min(1)] private int heightMm = 492;
+    [SerializeField, Min(1)] private int depthMm = 476;
 
     [Header("Mini-Tower Dimensions (mm)")]
     [SerializeField, Min(1)] private int miniWidthMm = 165;
@@ -72,7 +72,7 @@ public class CaseSelectionController : MonoBehaviour
             return "Не помещается";
 
         return rotated
-            ? "Подходит при повороте на 90°"
+            ? "Подходит по габаритам"
             : "Подходит по габаритам";
     }
 
